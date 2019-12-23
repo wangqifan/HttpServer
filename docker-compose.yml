@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  env:
+    image: dev:latest
+    container_name: linux-dev
+    tty: true
+    volumes:
+     - ./:/root/dev
