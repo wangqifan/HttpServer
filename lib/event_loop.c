@@ -2,6 +2,7 @@
 #include <assert.h>
 #include "log.h"
 #include "channel.h"
+#include "utils.h"
 
 
 int event_loop_handle_pending_channel(struct event_loop *eventLoop) {
@@ -15,11 +16,11 @@ int event_loop_handle_pending_channel(struct event_loop *eventLoop) {
         struct channel *channel = channelElement->channel;
         int fd = channel->fd;
         if (channelElement->type == 1) {
-            event_loop_handle_pending_add(eventLoop, fd, channel);
+        //    event_loop_handle_pending_add(eventLoop, fd, channel);
         } else if (channelElement->type == 2) {
-            event_loop_handle_pending_remove(eventLoop, fd, channel);
+        //    event_loop_handle_pending_remove(eventLoop, fd, channel);
         } else if (channelElement->type == 3) {
-            event_loop_handle_pending_update(eventLoop, fd, channel);
+         //   event_loop_handle_pending_update(eventLoop, fd, channel);
         }
         channelElement = channelElement->next;
     }
@@ -54,7 +55,7 @@ struct event_loop *event_loop_init_with_name(char *thread_name) {
     
    
     app_msgx("dispatcher init, %s", eventLoop->thread_name);
-    eventLoop->event_dispatcher_data = dispatcher_init(eventLoop);
+    eventLoop->event_dispatcher_data = dispatcher_data_init(eventLoop);
 
     //add the socketfd to event
     eventLoop->owner_thread_id = pthread_self();
@@ -126,7 +127,7 @@ int event_loop_add_channel_event(struct event_loop *eventLoop, int fd, struct ch
     return event_loop_do_channel_event(eventLoop, fd, channel1, 1);
 }
 
-int event_loop_handle_pending_add(struct event_loop *eventLoop, int fd, struct channel *channel) {
+int event_loop_handle_pending_add(struct event_loop *eventLoop, int fd, struct channel *channel1) {
     app_msgx("add channel fd == %d, %s", fd, eventLoop->thread_name);
     struct channel_map *map = eventLoop->channelMap;
 
@@ -141,9 +142,9 @@ int event_loop_handle_pending_add(struct event_loop *eventLoop, int fd, struct c
     //第一次创建，增加
     if ((map)->entries[fd] == NULL) {
         map->entries[fd] = calloc(1, sizeof(struct channel *));
-        map->entries[fd] = channel;
+        map->entries[fd] = channel1;
         //add channel
-        event_add(eventLoop, channel);
+        event_add(eventLoop, channel1);
         return 1;
     }
 

@@ -10,6 +10,7 @@
 #include    <fcntl.h>
 #include    <stddef.h>
 #include    <unistd.h>
+#include    <pthread.h>
 
 
 void make_nonblocking(int fd);

@@ -1,6 +1,6 @@
 #include  <sys/epoll.h>
+
 #include "event_dispatcher.h"
-#include "log.h"
 
 #define MAXEVENTS 128
 
@@ -12,7 +12,7 @@ typedef struct {
     struct epoll_event *events;
 } epoll_dispatcher_data;
 
-void *dispatcher_init(struct event_loop *eventLoop) {
+void* dispatcher_data_init(struct event_loop * eventLoop) {
     epoll_dispatcher_data *epollDispatcherData = malloc(sizeof(epoll_dispatcher_data));
 
     epollDispatcherData->event_count = 0;
@@ -30,7 +30,7 @@ void *dispatcher_init(struct event_loop *eventLoop) {
     return epollDispatcherData;
 }
 
-int event_dispatch(struct event_loop *eventLoop, struct timeval *timeval) {
+int event_dispatch(struct event_loop * eventLoop, struct timeval *timeval) {
     epoll_dispatcher_data *epollDispatcherData = (epoll_dispatcher_data *) eventLoop->event_dispatcher_data;
     int i, n;
 
@@ -57,7 +57,7 @@ int event_dispatch(struct event_loop *eventLoop, struct timeval *timeval) {
     return 0;
 }
 
-void event_clear(struct event_loop *eventLoop) {
+void event_clear(struct event_loop * eventLoop) {
     epoll_dispatcher_data *epollDispatcherData = (epoll_dispatcher_data *) eventLoop->event_dispatcher_data;
 
     free(epollDispatcherData->events);
@@ -68,7 +68,7 @@ void event_clear(struct event_loop *eventLoop) {
     return;
 }
 
-int event_add(struct event_loop *eventLoop, struct channel *channel1) {
+int event_add(struct event_loop * eventLoop, struct channel * channel1) {
     epoll_dispatcher_data *pollDispatcherData = (epoll_dispatcher_data *) eventLoop->event_dispatcher_data;
 
     int fd = channel1->fd;
@@ -90,7 +90,7 @@ int event_add(struct event_loop *eventLoop, struct channel *channel1) {
     return 0;
 }
 
-int event_delete(struct event_loop * eventLoop, struct channel * channel) {
+int event_delete(struct event_loop * eventLoop, struct channel * channel1) {
     epoll_dispatcher_data *pollDispatcherData = (epoll_dispatcher_data *) eventLoop->event_dispatcher_data;
 
     int fd = channel1->fd;
@@ -114,7 +114,7 @@ int event_delete(struct event_loop * eventLoop, struct channel * channel) {
     return 0;
 }
 
-int event_update(struct event_loop *eventLoop, struct channel *channel1) {
+int event_update(struct event_loop * eventLoop, struct channel *channel1) {
     epoll_dispatcher_data *pollDispatcherData = (epoll_dispatcher_data *) eventLoop->event_dispatcher_data;
 
     int fd = channel1->fd;
