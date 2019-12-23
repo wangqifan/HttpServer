@@ -75,7 +75,6 @@ void app_logx(int severity, const char *errstr, const char *fmt, va_list ap)
         vsnprintf(buf, sizeof(buf), fmt, ap);
     else
         buf[0] = '\0';
-
     if (errstr) {
         len = strlen(buf);
         if (len < sizeof(buf) - 3) {
