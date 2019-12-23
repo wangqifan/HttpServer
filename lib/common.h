@@ -8,6 +8,8 @@
 #include    <sys/socket.h>
 #include    <netinet/in.h>
 #include    <fcntl.h>
+#include    <stddef.h>
+#include    <unistd.h>
 
 
 void make_nonblocking(int fd);

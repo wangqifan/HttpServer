@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "event_loop.h": "c",
+        "assert.h": "c",
+        "epoll_dispatcher.h": "c",
+        "channel_map.h": "c"
+    }
+}
