@@ -134,15 +134,15 @@ int handle_connection_established(void *data) {
    // struct event_loop *eventLoop = thread_pool_get_loop(tcpServer->threadPool);
 
     // create a new tcp connection
-  /*  struct tcp_connection *tcpConnection = tcp_connection_new(connected_fd, eventLoop,
+    struct tcp_connection *tcpConnection = tcp_connection_new(connected_fd, tcpServer->eventLoop,
                                                               tcpServer->connectionCompletedCallBack,
                                                               tcpServer->connectionClosedCallBack,
                                                               tcpServer->messageCallBack,
                                                               tcpServer->writeCompletedCallBack);
-    */
+    
    //for callback use
     if (tcpServer->data != NULL) {
-     //   tcpConnection->data = tcpServer->data;
+      //  tcpConnection->data = tcpServer->data;
     }
     return 0;
 }

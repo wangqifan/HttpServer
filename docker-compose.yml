@@ -5,5 +5,7 @@ services:
     image: dev:latest
     container_name: linux-dev
     tty: true
+    ports:
+      - "80:80"
     volumes:
      - ./:/root/dev

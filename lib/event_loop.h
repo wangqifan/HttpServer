@@ -35,5 +35,11 @@ int event_loop_add_channel_event(struct event_loop *eventLoop, int fd, struct ch
 
 int channel_event_activate(struct event_loop *eventLoop, int fd, int res);
 
+int event_loop_handle_pending_add(struct event_loop *eventLoop, int fd, struct channel *channel);
+
+int event_loop_handle_pending_remove(struct event_loop *eventLoop, int fd, struct channel *channel);
+
+int event_loop_handle_pending_update(struct event_loop *eventLoop, int fd, struct channel *channel);
+
 #include "event_dispatcher.h"
 #endif

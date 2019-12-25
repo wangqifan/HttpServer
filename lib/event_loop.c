@@ -19,9 +19,9 @@ int event_loop_handle_pending_channel(struct event_loop *eventLoop) {
         if (channelElement->type == 1) {
             event_loop_handle_pending_add(eventLoop, fd, channel);
         } else if (channelElement->type == 2) {
-        //    event_loop_handle_pending_remove(eventLoop, fd, channel);
+            event_loop_handle_pending_remove(eventLoop, fd, channel);
         } else if (channelElement->type == 3) {
-         //   event_loop_handle_pending_update(eventLoop, fd, channel);
+            event_loop_handle_pending_update(eventLoop, fd, channel);
         }
         channelElement = channelElement->next;
     }
@@ -33,6 +33,46 @@ int event_loop_handle_pending_channel(struct event_loop *eventLoop) {
     pthread_mutex_unlock(&eventLoop->mutex);
 
     return 0;
+}
+
+// in the i/o thread
+int event_loop_handle_pending_remove(struct event_loop *eventLoop, int fd, struct channel *channel1) {
+    struct channel_map *map = eventLoop->channelMap;
+    assert(fd == channel1->fd);
+
+    if (fd < 0)
+        return 0;
+
+    if (fd >= map->nentries)
+        return (-1);
+
+    struct channel *channel2 = map->entries[fd];
+    int retval = 0;
+    if (event_delete(eventLoop, channel2) == -1) {
+        retval = -1;
+    } else {
+        retval = 1;
+    }
+
+    map->entries[fd] = NULL;
+    return retval;
+}
+
+
+// in the i/o thread
+int event_loop_handle_pending_update(struct event_loop *eventLoop, int fd, struct channel *channel) {
+    app_msgx("update channel fd == %d, %s", fd, eventLoop->thread_name);
+    struct channel_map *map = eventLoop->channelMap;
+
+    if (fd < 0)
+        return 0;
+
+    if ((map)->entries[fd] == NULL) {
+        return (-1);
+    }
+
+    //update channel
+    event_update(eventLoop, channel);
 }
 
 struct event_loop *event_loop_init() {
@@ -81,8 +121,10 @@ int event_loop_run(struct event_loop *eventLoop) {
 
     while (!eventLoop->quit) {
         //block here to wait I/O event, and get active channels
+        app_msgx("event_dispatch");
         event_dispatch(eventLoop, &timeval);
 
+        app_msgx("event_loop_handle_pending_channel");
         //handle the pending channel
         event_loop_handle_pending_channel(eventLoop);
     }
