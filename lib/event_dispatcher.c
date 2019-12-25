@@ -45,12 +45,12 @@ int event_dispatch(struct event_loop * eventLoop, struct timeval *timeval) {
 
         if (epollDispatcherData->events[i].events & EPOLLIN) {
             app_msgx("get message channel fd==%d for read, %s", epollDispatcherData->events[i].data.fd, eventLoop->thread_name);
-            // channel_event_activate(eventLoop, epollDispatcherData->events[i].data.fd, EVENT_READ);
+            channel_event_activate(eventLoop, epollDispatcherData->events[i].data.fd, EVENT_READ);
         }
 
         if (epollDispatcherData->events[i].events & EPOLLOUT) {
             app_msgx("get message channel fd==%d for write, %s", epollDispatcherData->events[i].data.fd,eventLoop->thread_name);
-            // channel_event_activate(eventLoop, epollDispatcherData->events[i].data.fd, EVENT_WRITE);
+            channel_event_activate(eventLoop, epollDispatcherData->events[i].data.fd, EVENT_WRITE);
         }
     }
 

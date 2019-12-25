@@ -150,3 +150,26 @@ int event_loop_handle_pending_add(struct event_loop *eventLoop, int fd, struct c
 
     return 0;
 }
+
+int channel_event_activate(struct event_loop *eventLoop, int fd, int revents) {
+    struct channel_map *map = eventLoop->channelMap;
+    app_msgx("activate channel fd == %d, revents=%d, %s", fd, revents, eventLoop->thread_name);
+
+    if (fd < 0)
+        return 0;
+
+    if (fd >= map->nentries)return (-1);
+
+    struct channel *channel = map->entries[fd];
+    assert(fd == channel->fd);
+
+    if (revents & (EVENT_READ)) {
+        if (channel->eventReadCallback) channel->eventReadCallback(channel->data);
+    }
+    if (revents & (EVENT_WRITE)) {
+        if (channel->eventWriteCallback) channel->eventWriteCallback(channel->data);
+    }
+
+    return 0;
+
+}

@@ -13,4 +13,7 @@ void app_logx(int severity, const char *errstr, const char *fmt, va_list ap);
 void app_msgx(const char *fmt, ...);
 void app_debugx(const char *fmt, ...);
 
+#define APP_LOG_MSG(msg) app_log(LOG_MSG_TYPE, msg)
+#define APP_LOG_ERR(msg) app_log(LOG_ERR_TYPE, msg)
+
 #endif

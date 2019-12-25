@@ -5,7 +5,7 @@
 
 void assertInSameThread(struct event_loop *eventLoop) {
     if (eventLoop->owner_thread_id != pthread_self()) {
-        LOG_ERR("not in the same thread");
+        APP_LOG_MSG("not in the same thread");
         exit(-1);
     }
 }

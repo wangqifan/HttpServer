@@ -33,5 +33,7 @@ struct event_loop *event_loop_init_with_name(char * thread_name);
 
 int event_loop_add_channel_event(struct event_loop *eventLoop, int fd, struct channel *channel1);
 
+int channel_event_activate(struct event_loop *eventLoop, int fd, int res);
+
 #include "event_dispatcher.h"
 #endif
