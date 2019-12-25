@@ -15,8 +15,9 @@ int event_loop_handle_pending_channel(struct event_loop *eventLoop) {
         //save into event_map
         struct channel *channel = channelElement->channel;
         int fd = channel->fd;
+        app_msgx("type %d", channelElement->type);
         if (channelElement->type == 1) {
-        //    event_loop_handle_pending_add(eventLoop, fd, channel);
+            event_loop_handle_pending_add(eventLoop, fd, channel);
         } else if (channelElement->type == 2) {
         //    event_loop_handle_pending_remove(eventLoop, fd, channel);
         } else if (channelElement->type == 3) {
@@ -107,6 +108,7 @@ void event_loop_channel_buffer_nolock(struct event_loop *eventLoop, int fd, stru
 
 int event_loop_do_channel_event(struct event_loop *eventLoop, int fd, struct channel *channel1, int type) {
     //get the lock
+    app_log("get mutex of event_loop %s","eve");
     pthread_mutex_lock(&eventLoop->mutex);
     assert(eventLoop->is_handle_pending == 0);
     // 加入待处理队列
@@ -114,9 +116,9 @@ int event_loop_do_channel_event(struct event_loop *eventLoop, int fd, struct cha
     //release the lock
     pthread_mutex_unlock(&eventLoop->mutex);
     if (!isInSameThread(eventLoop)) {
-       // event_loop_wakeup(eventLoop);
+     //   event_loop_wakeup(eventLoop);
     } else {
-      //  event_loop_handle_pending_channel(eventLoop);
+        event_loop_handle_pending_channel(eventLoop);
     }
 
     return 0;

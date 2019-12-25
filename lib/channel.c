@@ -20,11 +20,11 @@ int channel_write_event_is_enabled(struct channel *channel) {
 int channel_write_event_enable(struct channel *channel) {
     struct event_loop *eventLoop = (struct event_loop *) channel->data;
     channel->events = channel->events | EVENT_WRITE;
-    event_loop_update_channel_event(eventLoop, channel->fd, channel);
+//    event_loop_update_channel_event(eventLoop, channel->fd, channel);
 }
 
 int channel_write_event_disable(struct channel *channel) {
     struct event_loop *eventLoop = (struct event_loop *) channel->data;
     channel->events = channel->events & ~EVENT_WRITE;
-    event_loop_update_channel_event(eventLoop, channel->fd, channel);
+//    event_loop_update_channel_event(eventLoop, channel->fd, channel);
 }
