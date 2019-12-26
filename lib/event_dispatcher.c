@@ -34,6 +34,7 @@ int event_dispatch(struct event_loop * eventLoop, struct timeval *timeval) {
     epoll_dispatcher_data *epollDispatcherData = (epoll_dispatcher_data *) eventLoop->event_dispatcher_data;
     int i, n;
 
+    app_msgx("epoll_wait, %s", eventLoop->thread_name);
     n = epoll_wait(epollDispatcherData->efd, epollDispatcherData->events, MAXEVENTS, -1);
     app_msgx("epoll_wait wakeup, %s", eventLoop->thread_name);
     for (i = 0; i < n; i++) {

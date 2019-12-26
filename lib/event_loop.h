@@ -16,6 +16,8 @@ struct event_loop {
     struct channel_element *pending_head;
     struct channel_element *pending_tail;
 
+    int socketPair[2];
+
     pthread_mutex_t mutex;
     char *thread_name;
 };

@@ -19,6 +19,7 @@ struct tcp_connection {
     message_call_back messageCallBack;
     write_completed_call_back writeCompletedCallBack;
     connection_closed_call_back connectionClosedCallBack;
+
 };
 
 struct tcp_connection *

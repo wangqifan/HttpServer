@@ -74,5 +74,6 @@ tcp_connection_new(int connected_fd, struct event_loop *eventLoop,
     }
 
     event_loop_add_channel_event(tcpConnection->eventLoop, connected_fd, tcpConnection->channel);
+    app_msgx("add event to %s", eventLoop->thread_name);
     return tcpConnection;
 }

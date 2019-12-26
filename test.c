@@ -56,7 +56,7 @@ int main() {
     struct event_loop *eventLoop = event_loop_init();
     
     struct TCPserver *tcpServer = tcp_server_init(eventLoop, acceptor, onConnectionCompleted, onMessage,
-                                                  onWriteCompleted, onConnectionClosed);
+                                                  onWriteCompleted, onConnectionClosed, 4);
     tcp_server_start(tcpServer);
 
     event_loop_run(eventLoop);

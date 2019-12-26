@@ -7,6 +7,7 @@
         "channel.h": "c",
         "tcp_connection.h": "c",
         "tcp_server.h": "c",
-        "acceptor.h": "c"
+        "acceptor.h": "c",
+        "thread_pool.h": "c"
     }
 }

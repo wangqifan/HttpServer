@@ -1,5 +1,5 @@
-test : test.o lib/log.o lib/acceptor.o lib/event_loop.o lib/utils.o lib/channel_map.o lib/event_dispatcher.o lib/buffer.o lib/tcp_connection.o lib/tcp_server.o lib/channel.o
-	cc -o test test.o lib/log.o  lib/acceptor.o lib/utils.o lib/event_loop.o lib/channel_map.o lib/event_dispatcher.o lib/buffer.o lib/tcp_connection.o lib/tcp_server.o lib/channel.o
+test : test.o lib/log.o lib/acceptor.o lib/event_loop.o lib/utils.o lib/channel_map.o lib/event_dispatcher.o lib/buffer.o lib/tcp_connection.o lib/tcp_server.o lib/channel.o  lib/thread_pool.o  lib/event_loop_thread.o
+	cc -o test test.o lib/log.o  lib/acceptor.o lib/utils.o lib/event_loop.o lib/channel_map.o lib/event_dispatcher.o lib/buffer.o lib/tcp_connection.o lib/tcp_server.o lib/channel.o  lib/thread_pool.o lib/event_loop_thread.o -lpthread
 
 test.o: test.c
 	cc -c test.c
@@ -33,5 +33,12 @@ lib/tcp_server.o:
 lib/buffer.o:
 	cc -o lib/buffer.o -c lib/buffer.c
 
+lib/event_loop_thread.o:
+	cc -o lib/event_loop_thread.o -c lib/event_loop_thread.c -lpthread
+
+lib/thread_pool.o:
+	cc -o lib/thread_pool.o -c lib/thread_pool.c
+
+
 clean:
-	rm test test.o lib/log.o lib/acceptor.o lib/utils.o lib/event_loop.o lib/channel_map.o lib/event_dispatcher.o lib/buffer.o lib/tcp_connection.o lib/tcp_server.o lib/channel.o
+	rm test test.o lib/log.o lib/acceptor.o lib/utils.o lib/event_loop.o lib/channel_map.o lib/event_dispatcher.o lib/buffer.o lib/tcp_connection.o lib/tcp_server.o lib/channel.o lib/thread_pool.o lib/event_loop_thread.o

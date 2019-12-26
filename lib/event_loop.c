@@ -79,6 +79,17 @@ struct event_loop *event_loop_init() {
     return event_loop_init_with_name(NULL);
 }
 
+
+int handleWakeup(void *data) {
+    struct event_loop *eventLoop = (struct event_loop *) data;
+    char one;
+    ssize_t n = read(eventLoop->socketPair[1], &one, sizeof one);
+    if (n != sizeof one) {
+        APP_LOG_ERR("handleWakeup  failed");
+    }
+    app_msgx("wakeup, %s", eventLoop->thread_name);
+}
+
 struct event_loop *event_loop_init_with_name(char *thread_name) {
     struct event_loop *eventLoop = malloc(sizeof(struct event_loop));
     pthread_mutex_init(&eventLoop->mutex, NULL);
@@ -100,10 +111,18 @@ struct event_loop *event_loop_init_with_name(char *thread_name) {
 
     //add the socketfd to event
     eventLoop->owner_thread_id = pthread_self();
+
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, eventLoop->socketPair) < 0) {
+        APP_LOG_ERR("socketpair set fialed");
+    }
    
     eventLoop->is_handle_pending = 0;
     eventLoop->pending_head = NULL;
     eventLoop->pending_tail = NULL;
+
+    struct channel *channel = channel_new(eventLoop->socketPair[1], EVENT_READ, handleWakeup, NULL, eventLoop);
+    event_loop_add_channel_event(eventLoop, eventLoop->socketPair[0], channel);
+
 
     return eventLoop;
 }
@@ -121,10 +140,10 @@ int event_loop_run(struct event_loop *eventLoop) {
 
     while (!eventLoop->quit) {
         //block here to wait I/O event, and get active channels
-        app_msgx("event_dispatch");
+        app_msgx("event_dispatch %s", eventLoop->thread_name);
         event_dispatch(eventLoop, &timeval);
 
-        app_msgx("event_loop_handle_pending_channel");
+        app_msgx("event_loop_handle_pending_channel  %s", eventLoop->thread_name);
         //handle the pending channel
         event_loop_handle_pending_channel(eventLoop);
     }
@@ -148,9 +167,16 @@ void event_loop_channel_buffer_nolock(struct event_loop *eventLoop, int fd, stru
     }
 }
 
+void event_loop_wakeup(struct event_loop *eventLoop) {
+    char one = 'a';
+    ssize_t n = write(eventLoop->socketPair[0], &one, sizeof one);
+    if (n != sizeof one) {
+        APP_LOG_ERR("wakeup event loop thread failed");
+    }
+}
+
 int event_loop_do_channel_event(struct event_loop *eventLoop, int fd, struct channel *channel1, int type) {
     //get the lock
-    app_log("get mutex of event_loop %s","eve");
     pthread_mutex_lock(&eventLoop->mutex);
     assert(eventLoop->is_handle_pending == 0);
     // 加入待处理队列
@@ -158,7 +184,7 @@ int event_loop_do_channel_event(struct event_loop *eventLoop, int fd, struct cha
     //release the lock
     pthread_mutex_unlock(&eventLoop->mutex);
     if (!isInSameThread(eventLoop)) {
-     //   event_loop_wakeup(eventLoop);
+        event_loop_wakeup(eventLoop);
     } else {
         event_loop_handle_pending_channel(eventLoop);
     }

@@ -21,6 +21,7 @@ struct TCPserver {
     write_completed_call_back writeCompletedCallBack;
     connection_closed_call_back connectionClosedCallBack;
     struct thread_pool *threadPool;
+    int threadNum;
     void * data; //for callback use: http_server
 };
 
@@ -31,7 +32,8 @@ tcp_server_init(struct event_loop *eventLoop, struct acceptor *acceptor,
                 connection_completed_call_back connectionCallBack,
                 message_call_back messageCallBack,
                 write_completed_call_back writeCompletedCallBack,
-                connection_closed_call_back connectionClosedCallBack);
+                connection_closed_call_back connectionClosedCallBack,
+                int threadNum);
 
 //开启监听
 void tcp_server_start(struct TCPserver *tcpServer);

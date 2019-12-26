@@ -11,6 +11,7 @@
 #include    <stddef.h>
 #include    <unistd.h>
 #include    <pthread.h>
+#include    <signal.h>
 
 
 void make_nonblocking(int fd);
