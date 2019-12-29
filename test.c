@@ -1,65 +1,53 @@
-#include "lib/log.h"
-#include "lib/acceptor.h"
-#include "lib/tcp_connection.h"
-#include "lib/tcp_server.h"
+#include "lib/http_server.h"
+#include "lib/common.h"
+#include "lib/event_loop.h"
 
-char rot13_char(char c) {
-    if ((c >= 'a' && c <= 'm') || (c >= 'A' && c <= 'M'))
-        return c + 13;
-    else if ((c >= 'n' && c <= 'z') || (c >= 'N' && c <= 'Z'))
-        return c - 13;
-    else
-        return c;
-}
-
-
-//连接建立之后的callback
-int onConnectionCompleted(struct tcp_connection *tcpConnection) {
-    printf("connection completed\n");
-    return 0;
-}
 
 //数据读到buffer之后的callback
-int onMessage(struct buffer *input, struct tcp_connection *tcpConnection) {
-    printf("get message from tcp connection %s\n", tcpConnection->name);
-    printf("%s", input->data);
-
-    struct buffer *output = buffer_new();
-    int size = buffer_readable_size(input);
-    for (int i = 0; i < size; i++) {
-        buffer_append_char(output, rot13_char(buffer_read_char(input)));
+int onRequest(struct http_request *httpRequest, struct http_response *httpResponse) {
+    app_msgx("status %s", "on request-=+++++++++++++++++++++++");
+    char *url = httpRequest->url;
+    char *question = memmem(url, strlen(url), "?", 1);
+    char *path = NULL;
+    if (question != NULL) {
+        path = malloc(question - url);
+        strncpy(path, url, question - url);
+    } else {
+        path = malloc(strlen(url));
+        strncpy(path, url, strlen(url));
     }
-   //tcp_connection_send_buffer(tcpConnection, output);
+
+    if (strcmp(path, "/") == 0) {
+        httpResponse->statusCode = OK;
+        httpResponse->statusMessage = "OK";
+        httpResponse->contentType = "text/html";
+        httpResponse->body = "<html><head><title>This is network programming</title></head><body><h1>Hello, network programming</h1></body></html>";
+    } else if (strcmp(path, "/network") == 0) {
+        httpResponse->statusCode = OK;
+        httpResponse->statusMessage = "OK";
+        httpResponse->contentType = "text/plain";
+        httpResponse->body = "hello, network programming";
+    } else {
+        httpResponse->statusCode = NotFound;
+        httpResponse->statusMessage = "Not Found";
+        httpResponse->keep_connected = 1;
+    }
+
     return 0;
 }
 
-//数据通过buffer写完之后的callback
-int onWriteCompleted(struct tcp_connection *tcpConnection) {
-    printf("write completed\n");
-    return 0;
-}
-
-//连接关闭之后的callback
-int onConnectionClosed(struct tcp_connection *tcpConnection) {
-    printf("connection closed\n");
-    return 0;
-}
 
 int main() {
-    app_msgx("test log app starting");
-    app_debugx("test log app starting");
-    struct acceptor *acceptor  = acceptor_init(80);
-    app_msgx("listen fd is:   %d", acceptor->listen_fd);
-    app_msgx("listen port is:  %d", acceptor->listen_port);
-
-
+   
+    //主线程event_loop
     struct event_loop *eventLoop = event_loop_init();
-    
-    struct TCPserver *tcpServer = tcp_server_init(eventLoop, acceptor, onConnectionCompleted, onMessage,
-                                                  onWriteCompleted, onConnectionClosed, 4);
-    tcp_server_start(tcpServer);
 
+    //初始tcp_server，可以指定线程数目，如果线程是0，就是在这个线程里acceptor+i/o；如果是1，有一个I/O线程
+    //tcp_server自己带一个event_loop
+    struct http_server *httpServer = http_server_new(eventLoop, 80, onRequest, 4);
+    http_server_start(httpServer);
+
+    // main thread for acceptor
     event_loop_run(eventLoop);
-    
     return 0;
 }

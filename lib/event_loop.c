@@ -139,14 +139,14 @@ int event_loop_run(struct event_loop *eventLoop) {
     timeval.tv_sec = 1;
 
     while (!eventLoop->quit) {
-        //block here to wait I/O event, and get active channels
+          //block here to wait I/O event, and get active channels
         app_msgx("event_dispatch %s", eventLoop->thread_name);
         event_dispatch(eventLoop, &timeval);
 
         app_msgx("event_loop_handle_pending_channel  %s", eventLoop->thread_name);
-        //handle the pending channel
+          //handle the pending channel
         event_loop_handle_pending_channel(eventLoop);
-    }
+    } 
 
     app_msgx("event loop end, %s", eventLoop->thread_name);
     return 0;
