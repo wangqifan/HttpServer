@@ -25,4 +25,7 @@ int event_update(struct event_loop * eventLoop, struct channel * channel1);
 /** 清除数据 */
 void event_clear(struct event_loop * eventLoop);
 
+int event_loop_remove_channel_event(struct event_loop *eventLoop, int fd, struct channel *channel1);
+
+
 #endif

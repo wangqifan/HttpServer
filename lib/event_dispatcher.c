@@ -91,6 +91,10 @@ int event_add(struct event_loop * eventLoop, struct channel * channel1) {
     return 0;
 }
 
+int event_loop_remove_channel_event(struct event_loop *eventLoop, int fd, struct channel *channel1) {
+    return event_loop_do_channel_event(eventLoop, fd, channel1, 2);
+}
+
 int event_delete(struct event_loop * eventLoop, struct channel * channel1) {
     epoll_dispatcher_data *pollDispatcherData = (epoll_dispatcher_data *) eventLoop->event_dispatcher_data;
 

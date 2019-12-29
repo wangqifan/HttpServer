@@ -5,7 +5,6 @@
 
 //数据读到buffer之后的callback
 int onRequest(struct http_request *httpRequest, struct http_response *httpResponse) {
-    app_msgx("status %s", "on request-=+++++++++++++++++++++++");
     char *url = httpRequest->url;
     char *question = memmem(url, strlen(url), "?", 1);
     char *path = NULL;

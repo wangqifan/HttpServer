@@ -1,5 +1,15 @@
 #include "tcp_connection.h"
 #include "utils.h"
+#include "event_dispatcher.h"
+
+int handle_connection_closed(struct tcp_connection *tcpConnection) {
+    struct event_loop *eventLoop = tcpConnection->eventLoop;
+    struct channel *channel = tcpConnection->channel;
+    event_loop_remove_channel_event(eventLoop, channel->fd, channel);
+    if (tcpConnection->connectionClosedCallBack != NULL) {
+        tcpConnection->connectionClosedCallBack(tcpConnection);
+    }
+}
 
 int handle_read(void *data) {
     struct tcp_connection *tcpConnection = (struct tcp_connection *) data;
@@ -12,7 +22,7 @@ int handle_read(void *data) {
             tcpConnection->messageCallBack(input_buffer, tcpConnection);
         }
     } else {
-       // handle_connection_closed(tcpConnection);
+       handle_connection_closed(tcpConnection);
     }
 }
 

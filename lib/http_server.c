@@ -5,10 +5,8 @@
 
 //连接建立之后的callback
 int http_onConnectionCompleted(struct tcp_connection *tcpConnection) {
-    app_msgx("connection completed ++++");
     struct http_request *httpRequest = http_request_new();
     tcpConnection->request = httpRequest;
-    app_msgx("set request ===============================================");
     return 0;
 }
 
@@ -89,43 +87,31 @@ int parse_http_request(struct buffer *input, struct http_request *httpRequest) {
 // buffer是框架构建好的，并且已经收到部分数据的情况下
 // 注意这里可能没有收到全部数据，所以要处理数据不够的情形
 int http_onMessage(struct buffer *input, struct tcp_connection *tcpConnection) {
-    app_msgx("get message from tcp connection %s", tcpConnection->name);
-
     struct http_request *httpRequest = (struct http_request *) tcpConnection->request;
     struct http_server *httpServer = (struct http_server *) tcpConnection->data;
     
-   app_msgx("message %d", 1);
-
-
     if (parse_http_request(input, httpRequest) == 0) {
         char *error_response = "HTTP/1.1 400 Bad Request\r\n\r\n";
         tcp_connection_send_data(tcpConnection, error_response, sizeof(error_response));
         tcp_connection_shutdown(tcpConnection);
     }
-    app_msgx("message %d", 2);
-
-
+  
     //处理完了所有的request数据，接下来进行编码和发送
     if (http_request_current_state(httpRequest) == REQUEST_DONE) {
         struct http_response *httpResponse = http_response_new();
-        app_msgx("message %d", 4);
         //httpServer暴露的requestCallback回调
-       // app_msgx("function adress is %p", httpServer->requestCallback);
-       // if (httpServer->requestCallback != NULL) {
-            app_msgx("message %d", 90);
+       if (httpServer->requestCallback != NULL) {
+           
             httpServer->requestCallback(httpRequest, httpResponse);
-       // }
-         app_msgx("message %d", 5);
+       }
         struct buffer *buffer = buffer_new();
         http_response_encode_buffer(httpResponse, buffer);
         tcp_connection_send_buffer(tcpConnection, buffer);
- app_msgx("message %d", 6);
         if (http_request_close_connection(httpRequest)) {
             tcp_connection_shutdown(tcpConnection);
         }
 	    http_request_reset(httpRequest);
     }
-     app_msgx("message %d", 7);
 
 }
 
@@ -152,7 +138,6 @@ struct http_server *http_server_new(struct event_loop *eventLoop, int port,
                                     ) {
     struct http_server *httpServer = malloc(sizeof(struct http_server));
     httpServer->requestCallback = requestCallback;
-    app_msgx("--------------function adress------%p", httpServer->requestCallback);
     //初始化acceptor
     struct acceptor *acceptor = acceptor_init(port);
 
