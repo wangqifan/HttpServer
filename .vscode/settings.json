@@ -1,6 +1,0 @@
-{
-    "files.associations": {
-        "ctrycatch.h": "c",
-        "event_loop.h": "c"
-    }
-}
