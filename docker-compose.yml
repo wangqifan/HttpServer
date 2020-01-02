@@ -1,11 +1,11 @@
 version: "3"
 
 services:
-  env:
+  linux-dev:
     image: dev:latest
     container_name: linux-dev
     tty: true
     ports:
-      - "80:80"
+      - "8080:80"
     volumes:
      - ./:/root/dev

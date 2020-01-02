@@ -102,7 +102,7 @@ int http_onMessage(struct buffer *input, struct tcp_connection *tcpConnection) {
         //httpServer暴露的requestCallback回调
        if (httpServer->requestCallback != NULL) {
            
-            httpServer->requestCallback(httpRequest, httpResponse);
+            httpServer->requestCallback(httpServer,httpRequest, httpResponse);
        }
         struct buffer *buffer = buffer_new();
         http_response_encode_buffer(httpResponse, buffer);
@@ -131,13 +131,34 @@ int http_onConnectionClosed(struct tcp_connection *tcpConnection) {
     return 0;
 }
 
+//数据读到buffer之后的callback
+int onRequest(struct http_server *httpServer, struct http_request *httpRequest, struct http_response *httpResponse) {
+    char *url = httpRequest->url;
+    char *question = memmem(url, strlen(url), "?", 1);
+    char *path = NULL;
+    
+    httpHandle *handle1 = malloc(sizeof(httpHandle));
+    hashmap_get(httpServer->routeMap, url, handle1);
+  
+    if(handle1 != NULL) {
+        (*handle1)(httpRequest, httpResponse);
+    } else {
+        httpResponse->statusCode = NotFound;
+        httpResponse->statusMessage = "Not Found";
+        httpResponse->keep_connected = 1;
+        httpResponse->body = "404";
+    }
+
+    return 0;
+}
+
+
 
 struct http_server *http_server_new(struct event_loop *eventLoop, int port,
-                                    request_callback requestCallback,
                                     int threadNum
                                     ) {
     struct http_server *httpServer = malloc(sizeof(struct http_server));
-    httpServer->requestCallback = requestCallback;
+    httpServer->requestCallback = onRequest;
     //初始化acceptor
     struct acceptor *acceptor = acceptor_init(port);
 
@@ -148,10 +169,18 @@ struct http_server *http_server_new(struct event_loop *eventLoop, int port,
     // for callback
     httpServer->tcpServer->data = httpServer;
 
+    malloc(sizeof(struct TCPserver));
+    httpServer->routeMap =  (hashmap_map*) malloc(sizeof(hashmap_map));
+    httpServer->routeMap = hashmap_new();
+
     return httpServer;
 }
 
 
 void http_server_start(struct http_server *httpServer) {
     tcp_server_start(httpServer->tcpServer);
+}
+
+void add_handle(struct http_server *httpServer, char* url, httpHandle handle1) {
+    hashmap_put(httpServer->routeMap, url, handle1);
 }

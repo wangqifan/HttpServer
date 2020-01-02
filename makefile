@@ -1,5 +1,5 @@
-test : test.o lib/log.o lib/acceptor.o lib/event_loop.o lib/utils.o lib/channel_map.o lib/event_dispatcher.o lib/buffer.o lib/tcp_connection.o lib/tcp_server.o lib/channel.o  lib/thread_pool.o  lib/event_loop_thread.o lib/http_request.o lib/http_response.o lib/http_server.o
-	cc -o test test.o lib/log.o  lib/acceptor.o lib/utils.o lib/event_loop.o lib/channel_map.o lib/event_dispatcher.o lib/buffer.o lib/tcp_connection.o lib/tcp_server.o lib/channel.o  lib/thread_pool.o lib/event_loop_thread.o lib/http_request.o lib/http_response.o lib/http_server.o -lpthread
+test : test.o lib/log.o lib/acceptor.o lib/event_loop.o lib/utils.o lib/channel_map.o lib/event_dispatcher.o lib/buffer.o lib/tcp_connection.o lib/tcp_server.o lib/channel.o  lib/thread_pool.o  lib/event_loop_thread.o lib/http_request.o lib/http_response.o lib/http_server.o lib/hashmap.o 
+	cc -o test test.o lib/log.o  lib/acceptor.o lib/utils.o lib/event_loop.o lib/channel_map.o lib/event_dispatcher.o lib/buffer.o lib/tcp_connection.o lib/tcp_server.o lib/channel.o  lib/thread_pool.o lib/event_loop_thread.o lib/http_request.o lib/http_response.o lib/http_server.o lib/hashmap.o  -lpthread
 
 test.o: test.c
 	cc -c test.c
@@ -48,5 +48,8 @@ lib/http_response.o:
 lib/http_server.o:
 	cc -o lib/http_server.o -c lib/http_server.c
 
+lib/hashmap.o:
+	cc -o  lib/hashmap.o -c lib/hashmap.c
+
 clean:
-	rm test test.o lib/log.o lib/acceptor.o lib/utils.o lib/event_loop.o lib/channel_map.o lib/event_dispatcher.o lib/buffer.o lib/tcp_connection.o lib/tcp_server.o lib/channel.o lib/thread_pool.o lib/event_loop_thread.o lib/http_request.o lib/http_response.o lib/http_server.o
+	rm test test.o lib/log.o lib/acceptor.o lib/utils.o lib/event_loop.o lib/channel_map.o lib/event_dispatcher.o lib/buffer.o lib/tcp_connection.o lib/tcp_server.o lib/channel.o lib/thread_pool.o lib/event_loop_thread.o lib/http_request.o lib/http_response.o lib/http_server.o lib/hashmap.o 
