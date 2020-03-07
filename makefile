@@ -20,6 +20,7 @@ objs : $(OBJS)
 clean :
 	find lib/ -name '*.o' | xargs rm -f
 	find . -name $(TARGET) | xargs rm -f
+	rm test.o
 debug:
 	@echo $(SOURCE)
 

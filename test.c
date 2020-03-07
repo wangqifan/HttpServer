@@ -7,7 +7,7 @@ char* homeHandle(struct http_request *httpRequest, struct http_response *httpRes
         httpResponse->statusCode = OK;
         httpResponse->statusMessage = "OK";
         httpResponse->contentType = "text/html";
-        httpResponse->body = "<html><head><title>This is network programming</title></head><body><h1>Hello, network programming</h1></body></html>";
+        httpResponse->body = "<html><head><title>This is network programming</title></head><body><h1>Hello, network programming</h1></body></html>\n";
 }
 
 
