@@ -138,15 +138,15 @@ int onRequest(struct http_server *httpServer, struct http_request *httpRequest, 
     char *path = NULL;
     
     httpHandle *handle1 = malloc(sizeof(httpHandle));
-    hashmap_get(httpServer->routeMap, url, handle1);
+    int isfind = hashmap_get(httpServer->routeMap, url, handle1);
   
-    if(handle1 != NULL) {
+    if(isfind == MAP_OK) {
         (*handle1)(httpRequest, httpResponse);
     } else {
         httpResponse->statusCode = NotFound;
         httpResponse->statusMessage = "Not Found";
-        httpResponse->keep_connected = 1;
-        httpResponse->body = "404";
+        httpResponse->contentType = "text/html";
+        httpResponse->body = "404 not found\n";
     }
 
     return 0;
